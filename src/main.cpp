@@ -54,6 +54,27 @@ string getOsName() {
 
 string getKernelVersion() { return readTrim("/proc/sys/kernel/osrelease"); }
 
+string formatUptime(long seconds) {
+  long days = seconds / 86400;
+  seconds %= 86400;
+  long hours = seconds / 3600;
+  seconds %= 3600;
+  long minutes = seconds / 60;
+  seconds %= 60;
+
+  char buffer[100];
+  snprintf(buffer, sizeof(buffer),
+           "%ld days, %ld hours, %ld minutes, %ld seconds", days, hours,
+           minutes, seconds);
+  return string(buffer);
+}
+
+string getUptime() {
+  string uptimeStr = readTrim("/proc/uptime");
+  long s = stol(uptimeStr);
+  return formatUptime(s);
+}
+
 int main() {
   string osName = getOsName();
   cout << "Operating System: " << osName << endl;
@@ -63,6 +84,9 @@ int main() {
 
   string kernelVersion = getKernelVersion();
   cout << "Kernel Version: " << kernelVersion << endl;
+
+  string uptime = getUptime();
+  cout << "Uptime: " << uptime << endl;
 
   return 0;
 }
