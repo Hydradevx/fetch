@@ -52,11 +52,17 @@ string getOsName() {
   return "Unknown OS";
 }
 
+string getKernelVersion() { return readTrim("/proc/sys/kernel/osrelease"); }
+
 int main() {
   string osName = getOsName();
   cout << "Operating System: " << osName << endl;
 
   string hostName = getHost();
   cout << "Host Device: " << hostName << endl;
+
+  string kernelVersion = getKernelVersion();
+  cout << "Kernel Version: " << kernelVersion << endl;
+
   return 0;
 }
