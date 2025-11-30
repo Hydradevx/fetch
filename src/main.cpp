@@ -1,10 +1,11 @@
+#include <array>
 #include <fstream>
 #include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
 using namespace std;
-
-#include <fstream>
-#include <string>
 
 string readTrim(const string &path) {
   ifstream f(path);
@@ -21,6 +22,26 @@ bool invalid(const string &s) {
   if (s == "To Be Filled By O.E.M." || s == "To be filled by O.E.M.")
     return true;
   return false;
+}
+
+string execCmd(const char *cmd) {
+  array<char, 128> buffer{};
+  string result;
+  unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+  if (!pipe)
+    return "";
+  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+    result += buffer.data();
+  }
+  return result;
+}
+
+string trim(const string &s) {
+  size_t start = s.find_first_not_of(" \t\n\r");
+  size_t end = s.find_last_not_of(" \t\n\r");
+  if (start == string::npos)
+    return "";
+  return s.substr(start, end - start + 1);
 }
 
 string getHost() {
@@ -101,6 +122,32 @@ string getCpuCoreCount() {
   return to_string(count);
 }
 
+std::vector<std::string> getGpuModels() {
+  std::string raw = execCmd("lspci | grep -Ei 'vga|3d|display'");
+  std::vector<std::string> list;
+
+  size_t start = 0;
+  while (true) {
+    size_t end = raw.find('\n', start);
+    if (end == std::string::npos)
+      break;
+    std::string line = raw.substr(start, end - start);
+    start = end + 1;
+
+    size_t spacePos = line.find(' ');
+    if (spacePos != std::string::npos)
+      line = line.substr(spacePos + 1);
+
+    size_t colonPos = line.find(": ");
+    if (colonPos != std::string::npos)
+      line = line.substr(colonPos + 2);
+
+    list.push_back(line);
+  }
+
+  return list;
+}
+
 int main() {
   string osName = getOsName();
   cout << "Operating System: " << osName << endl;
@@ -119,6 +166,11 @@ int main() {
 
   string cpuCores = getCpuCoreCount();
   cout << "CPU Cores: " << cpuCores << endl;
+
+  vector<string> gpuModels = getGpuModels();
+  for (const auto &gpuModel : gpuModels) {
+    cout << "GPU Model: " << gpuModel << endl;
+  }
 
   return 0;
 }
