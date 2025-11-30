@@ -75,6 +75,32 @@ string getUptime() {
   return formatUptime(s);
 }
 
+string getCpuModel() {
+  ifstream cpuinfo("/proc/cpuinfo");
+  string line;
+  while (getline(cpuinfo, line)) {
+    if (line.find("model name") != string::npos) {
+      size_t colon = line.find(":");
+      if (colon != string::npos) {
+        return line.substr(colon + 2); // Skip ": "
+      }
+    }
+  }
+  return "Unknown CPU Model";
+}
+
+string getCpuCoreCount() {
+  ifstream cpuinfo("/proc/cpuinfo");
+  string line;
+  int count = 0;
+  while (getline(cpuinfo, line)) {
+    if (line.find("processor") != string::npos) {
+      count++;
+    }
+  }
+  return to_string(count);
+}
+
 int main() {
   string osName = getOsName();
   cout << "Operating System: " << osName << endl;
@@ -87,6 +113,12 @@ int main() {
 
   string uptime = getUptime();
   cout << "Uptime: " << uptime << endl;
+
+  string cpuModel = getCpuModel();
+  cout << "CPU Model: " << cpuModel << endl;
+
+  string cpuCores = getCpuCoreCount();
+  cout << "CPU Cores: " << cpuCores << endl;
 
   return 0;
 }
