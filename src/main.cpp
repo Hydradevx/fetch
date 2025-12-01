@@ -231,6 +231,18 @@ string getSwapFree() {
   return "Unknown Swap Free";
 }
 
+string getDiskSize() {
+  string cmd = "df -h  | awk 'NR==2 {print $2}'";
+  string size = execCmd(cmd.c_str());
+  return trim(size);
+}
+
+string getDiskUsed() {
+  string cmd = "df -h  | awk 'NR==2 {print $3}'";
+  string used = execCmd(cmd.c_str());
+  return trim(used);
+}
+
 int main() {
   string osName = getOsName();
   cout << "Operating System: " << osName << endl;
@@ -269,6 +281,12 @@ int main() {
 
   string swapFree = getSwapFree();
   cout << "Swap Free: " << swapFree << endl;
+
+  string diskSize = getDiskSize();
+  cout << "Disk Size: " << diskSize << endl;
+
+  string diskUsed = getDiskUsed();
+  cout << "Disk Used: " << diskUsed << endl;
 
   return 0;
 }
