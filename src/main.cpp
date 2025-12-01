@@ -195,6 +195,42 @@ string getUsedRam() {
   return to_string(usedMb) + " MB";
 }
 
+string getTotalSwap() {
+  ifstream meminfo("/proc/meminfo");
+  string line;
+  while (getline(meminfo, line)) {
+    if (line.find("SwapTotal:") == 0) {
+      size_t start = line.find_first_of("0123456789");
+      size_t end = line.find(" kB", start);
+      if (start != string::npos && end != string::npos) {
+        string swapKbStr = line.substr(start, end - start);
+        long swapKb = stol(swapKbStr);
+        long swapMb = swapKb / 1024;
+        return to_string(swapMb) + " MB";
+      }
+    }
+  }
+  return "Unknown Swap";
+}
+
+string getSwapFree() {
+  ifstream meminfo("/proc/meminfo");
+  string line;
+  while (getline(meminfo, line)) {
+    if (line.find("SwapFree:") == 0) {
+      size_t start = line.find_first_of("0123456789");
+      size_t end = line.find(" kB", start);
+      if (start != string::npos && end != string::npos) {
+        string swapKbStr = line.substr(start, end - start);
+        long swapKb = stol(swapKbStr);
+        long swapMb = swapKb / 1024;
+        return to_string(swapMb) + " MB";
+      }
+    }
+  }
+  return "Unknown Swap Free";
+}
+
 int main() {
   string osName = getOsName();
   cout << "Operating System: " << osName << endl;
@@ -227,6 +263,12 @@ int main() {
 
   string availableRam = getAvailableRam();
   cout << "Available RAM: " << availableRam << endl;
+
+  string totalSwap = getTotalSwap();
+  cout << "Total Swap: " << totalSwap << endl;
+
+  string swapFree = getSwapFree();
+  cout << "Swap Free: " << swapFree << endl;
 
   return 0;
 }
