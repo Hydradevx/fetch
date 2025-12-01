@@ -243,6 +243,22 @@ string getDiskUsed() {
   return trim(used);
 }
 
+string getResolution() {
+  string cmd = "xdpyinfo | grep dimensions | awk '{print $2}'";
+  string res = execCmd(cmd.c_str());
+  return trim(res);
+}
+
+string getShell() {
+  string shell = getenv("SHELL");
+  return shell.empty() ? "Unknown Shell" : shell;
+}
+
+string getTerminal() {
+  string term = getenv("TERMINAL");
+  return term.empty() ? "Unknown Terminal" : term;
+}
+
 int main() {
   string osName = getOsName();
   cout << "Operating System: " << osName << endl;
@@ -287,6 +303,15 @@ int main() {
 
   string diskUsed = getDiskUsed();
   cout << "Disk Used: " << diskUsed << endl;
+
+  string resolution = getResolution();
+  cout << "Screen Resolution: " << resolution << endl;
+
+  string shell = getShell();
+  cout << "Shell: " << shell << endl;
+
+  string terminal = getTerminal();
+  cout << "Terminal: " << terminal << endl;
 
   return 0;
 }
