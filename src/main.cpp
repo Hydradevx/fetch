@@ -148,6 +148,53 @@ std::vector<std::string> getGpuModels() {
   return list;
 }
 
+string getTotalRam() {
+  ifstream meminfo("/proc/meminfo");
+  string line;
+  while (getline(meminfo, line)) {
+    if (line.find("MemTotal:") == 0) {
+      size_t start = line.find_first_of("0123456789");
+      size_t end = line.find(" kB", start);
+      if (start != string::npos && end != string::npos) {
+        string memKbStr = line.substr(start, end - start);
+        long memKb = stol(memKbStr);
+        long memMb = memKb / 1024;
+        return to_string(memMb) + " MB";
+      }
+    }
+  }
+  return "Unknown RAM";
+}
+
+string getAvailableRam() {
+  ifstream meminfo("/proc/meminfo");
+  string line;
+  while (getline(meminfo, line)) {
+    if (line.find("MemAvailable:") == 0) {
+      size_t start = line.find_first_of("0123456789");
+      size_t end = line.find(" kB", start);
+      if (start != string::npos && end != string::npos) {
+        string memKbStr = line.substr(start, end - start);
+        long memKb = stol(memKbStr);
+        long memMb = memKb / 1024;
+        return to_string(memMb) + " MB";
+      }
+    }
+  }
+  return "Unknown Available RAM";
+}
+
+string getUsedRam() {
+  string total = getTotalRam();
+  string available = getAvailableRam();
+  if (total == "Unknown RAM" || available == "Unknown Available RAM")
+    return "Unknown Used RAM";
+  long totalMb = stol(total.substr(0, total.find(" ")));
+  long availableMb = stol(available.substr(0, available.find(" ")));
+  long usedMb = totalMb - availableMb;
+  return to_string(usedMb) + " MB";
+}
+
 int main() {
   string osName = getOsName();
   cout << "Operating System: " << osName << endl;
@@ -171,6 +218,15 @@ int main() {
   for (const auto &gpuModel : gpuModels) {
     cout << "GPU Model: " << gpuModel << endl;
   }
+
+  string totalRam = getTotalRam();
+  cout << "Total RAM: " << totalRam << endl;
+
+  string usedRam = getUsedRam();
+  cout << "Used RAM: " << usedRam << endl;
+
+  string availableRam = getAvailableRam();
+  cout << "Available RAM: " << availableRam << endl;
 
   return 0;
 }
