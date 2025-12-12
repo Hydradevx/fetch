@@ -309,6 +309,8 @@ string getFlatpakCount() {
   return "0";
 }
 
+string getKernalArchiture() { return trim(execCmd("uname -m")); }
+
 int main() {
   string osName = getOsName();
   cout << "Operating System: " << osName << endl;
@@ -371,6 +373,9 @@ int main() {
 
   string flatpakCount = getFlatpakCount();
   cout << "Installed Flatpaks: " << flatpakCount << endl;
+
+  string kernelArch = getKernalArchiture();
+  cout << "Kernel Architecture: " << kernelArch << endl;
 
   return 0;
 }
