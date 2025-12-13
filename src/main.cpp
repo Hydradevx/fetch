@@ -1,11 +1,14 @@
 #include "core/enviroment.hpp"
 #include "core/hardware.hpp"
 #include "core/system.hpp"
+#include "util/config.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
 
 using namespace std;
+
+Config config;
 
 void displayAll() {
   string osName = getOsName();
@@ -74,7 +77,44 @@ void displayAll() {
   cout << "Kernel Architecture: " << kernelArch << endl;
 }
 
+void Display() {
+  if (config.getBool("show_gpu", false)) {
+    vector<string> gpuModels = getGpuModels();
+    for (const auto &gpuModel : gpuModels) {
+      cout << "GPU Model: " << gpuModel << endl;
+    }
+  }
+
+  if (config.getBool("show_cpu", false)) {
+    string cpuModel = getCpuModel();
+    cout << "CPU Model: " << cpuModel << endl;
+  }
+
+  if (config.getBool("show_ram", false)) {
+    string totalRam = getTotalRam();
+    cout << "Total RAM: " << totalRam << endl;
+
+    string usedRam = getUsedRam();
+    cout << "Used RAM: " << usedRam << endl;
+
+    string availableRam = getAvailableRam();
+    cout << "Available RAM: " << availableRam << endl;
+  }
+
+  if (config.getBool("show_packages", false)) {
+    string packageCount = getPackageCount();
+    cout << "Installed Packages: " << packageCount << endl;
+
+    string flatpakCount = getFlatpakCount();
+    cout << "Installed Flatpaks: " << flatpakCount << endl;
+  }
+}
+
 int main() {
-  displayAll();
+  if (!config.load()) {
+    cerr << "Failed to load config." << endl;
+    return 1;
+  }
+  Display();
   return 0;
 }
