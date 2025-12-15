@@ -10,16 +10,16 @@ namespace fs = std::filesystem;
 static const char *DEFAULT_CONFIG = R"(show_gpu: true
 show_cpu: true
 show_ram: true
+show_used_ram: true
+show_available_ram: true
 show_packages: true
 
-theme:
-  color_primary: "#8aadf4"
-  color_secondary: "#c6d0f5"
+color_primary: "#8aadf4"
+color_secondary: "#c6d0f5"
 
-output:
-  padding_left: 2
-  padding_right: 2
-  show_logo: true
+padding_left: 2
+padding_right: 2
+logo: ubuntu
 )";
 
 string Config::getConfigPath() const {
@@ -79,3 +79,5 @@ int Config::getInt(const string &key, int fallback) const {
     return fallback;
   return root[key].as<int>();
 }
+
+Config config;

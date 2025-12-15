@@ -2,13 +2,12 @@
 #include "core/hardware.hpp"
 #include "core/system.hpp"
 #include "util/config.hpp"
+#include "util/distro.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
 
 using namespace std;
-
-Config config;
 
 void displayAll() {
   string osName = getOsName();
@@ -77,36 +76,60 @@ void displayAll() {
   cout << "Kernel Architecture: " << kernelArch << endl;
 }
 
-void Display() {
+vector<string> outLines;
+
+void DisplayRegister() {
   if (config.getBool("show_gpu", false)) {
     vector<string> gpuModels = getGpuModels();
     for (const auto &gpuModel : gpuModels) {
-      cout << "GPU Model: " << gpuModel << endl;
+      outLines.push_back("GPU Model: " + gpuModel);
     }
   }
 
   if (config.getBool("show_cpu", false)) {
     string cpuModel = getCpuModel();
-    cout << "CPU Model: " << cpuModel << endl;
+    outLines.push_back("CPU Model: " + cpuModel);
   }
 
   if (config.getBool("show_ram", false)) {
     string totalRam = getTotalRam();
-    cout << "Total RAM: " << totalRam << endl;
+    outLines.push_back("Total RAM: " + totalRam);
+  }
 
+  if (config.getBool("show_used_ram", false)) {
     string usedRam = getUsedRam();
-    cout << "Used RAM: " << usedRam << endl;
+    outLines.push_back("Used RAM: " + usedRam);
+  }
 
+  if (config.getBool("show_available_ram", false)) {
     string availableRam = getAvailableRam();
-    cout << "Available RAM: " << availableRam << endl;
+    outLines.push_back("Available RAM: " + availableRam);
   }
 
   if (config.getBool("show_packages", false)) {
     string packageCount = getPackageCount();
-    cout << "Installed Packages: " << packageCount << endl;
+    outLines.push_back("Installed Packages: " + packageCount);
 
     string flatpakCount = getFlatpakCount();
-    cout << "Installed Flatpaks: " << flatpakCount << endl;
+    outLines.push_back("Installed Flatpaks: " + flatpakCount);
+  }
+}
+
+void Display() {
+  vector<string> logoLines = getDistroLogo();
+  size_t maxLogoWidth = 0;
+  for (const auto &line : logoLines) {
+    if (line.length() > maxLogoWidth) {
+      maxLogoWidth = line.length();
+    }
+  }
+
+  size_t totalLines = max(logoLines.size(), outLines.size());
+  for (size_t i = 0; i < totalLines; ++i) {
+    string logoPart =
+        (i < logoLines.size()) ? logoLines[i] : string(maxLogoWidth, ' ');
+    string infoPart = (i < outLines.size()) ? outLines[i] : "";
+    cout << logoPart << "   " << infoPart << endl;
   }
 }
 
@@ -115,6 +138,7 @@ int main() {
     cerr << "Failed to load config." << endl;
     return 1;
   }
+  DisplayRegister();
   Display();
   return 0;
 }

@@ -17,3 +17,5 @@ private:
   YAML::Node root;
   std::string getConfigPath() const;
 };
+
+extern Config config;
