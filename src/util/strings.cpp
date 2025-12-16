@@ -1,5 +1,6 @@
 #include "util/strings.hpp"
 #include "fstream"
+#include <regex>
 
 using namespace std;
 
@@ -27,3 +28,10 @@ string readTrim(const string &path) {
   getline(f, s);
   return s;
 }
+
+std::string stripAnsi(const std::string &s) {
+  static const std::regex ansi(R"(\x1B\[[0-9;]*[A-Za-z])");
+  return std::regex_replace(s, ansi, "");
+}
+
+size_t visibleLength(const std::string &s) { return stripAnsi(s).length(); }

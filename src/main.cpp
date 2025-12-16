@@ -3,6 +3,7 @@
 #include "core/system.hpp"
 #include "util/config.hpp"
 #include "util/distro.hpp"
+#include "util/strings.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -10,8 +11,6 @@
 using namespace std;
 
 void displayAll() {
-  string osName = getOsName();
-  cout << "Operating System: " << osName << endl;
 
   string hostName = getHost();
   cout << "Host Device: " << hostName << endl;
@@ -22,25 +21,8 @@ void displayAll() {
   string uptime = getUptime();
   cout << "Uptime: " << uptime << endl;
 
-  string cpuModel = getCpuModel();
-  cout << "CPU Model: " << cpuModel << endl;
-
   string cpuCores = getCpuCoreCount();
   cout << "CPU Cores: " << cpuCores << endl;
-
-  vector<string> gpuModels = getGpuModels();
-  for (const auto &gpuModel : gpuModels) {
-    cout << "GPU Model: " << gpuModel << endl;
-  }
-
-  string totalRam = getTotalRam();
-  cout << "Total RAM: " << totalRam << endl;
-
-  string usedRam = getUsedRam();
-  cout << "Used RAM: " << usedRam << endl;
-
-  string availableRam = getAvailableRam();
-  cout << "Available RAM: " << availableRam << endl;
 
   string totalSwap = getTotalSwap();
   cout << "Total Swap: " << totalSwap << endl;
@@ -66,9 +48,6 @@ void displayAll() {
   string wm = GetWM();
   cout << "Window Manager: " << wm << endl;
 
-  string packageCount = getPackageCount();
-  cout << "Installed Packages: " << packageCount << endl;
-
   string flatpakCount = getFlatpakCount();
   cout << "Installed Flatpaks: " << flatpakCount << endl;
 
@@ -79,6 +58,11 @@ void displayAll() {
 vector<string> outLines;
 
 void DisplayRegister() {
+  if (config.getBool("show_os", false)) {
+    string osName = getOsName();
+    outLines.push_back("OS: " + osName);
+  }
+
   if (config.getBool("show_gpu", false)) {
     vector<string> gpuModels = getGpuModels();
     for (const auto &gpuModel : gpuModels) {
@@ -119,17 +103,27 @@ void Display() {
   vector<string> logoLines = getDistroLogo();
   size_t maxLogoWidth = 0;
   for (const auto &line : logoLines) {
-    if (line.length() > maxLogoWidth) {
-      maxLogoWidth = line.length();
+    if (visibleLength(line) > maxLogoWidth) {
+      maxLogoWidth = visibleLength(line);
     }
   }
 
+  int pad_left = config.getInt("padding_left", 0);
+  int pad_right = config.getInt("padding_right", 0);
   size_t totalLines = max(logoLines.size(), outLines.size());
   for (size_t i = 0; i < totalLines; ++i) {
-    string logoPart =
-        (i < logoLines.size()) ? logoLines[i] : string(maxLogoWidth, ' ');
+    string logoPart;
+    if (i < logoLines.size()) {
+      logoPart = logoLines[i];
+      size_t pad = maxLogoWidth - visibleLength(logoPart);
+      logoPart += string(pad, ' ');
+    } else {
+      logoPart = string(maxLogoWidth, ' ');
+    }
     string infoPart = (i < outLines.size()) ? outLines[i] : "";
-    cout << logoPart << "   " << infoPart << endl;
+
+    cout << string(pad_left, ' ') << logoPart << string(pad_right, ' ')
+         << infoPart << '\n';
   }
 }
 
