@@ -6,78 +6,97 @@
 
 using namespace std;
 namespace fs = std::filesystem;
+using json = nlohmann::json;
 
-static const char *DEFAULT_CONFIG = R"(show_gpu: true
-show_cpu: true
-show_ram: true
-show_used_ram: true
-show_available_ram: true
-show_packages: true
-
-color_primary: "#8aadf4"
-color_secondary: "#c6d0f5"
-
-padding_left: 2
-padding_right: 2
-logo: ubuntu
+static const char *DEFAULT_CONFIG = R"(
+{
+  "general": {
+    "logo": "auto",
+    "padding_left": 2,
+    "padding_right": 2
+  },
+  "theme": {
+    "color_primary": "#8aadf4",
+    "color_secondary": "#c6d0f5"
+  },
+  "modules": [
+    "os",
+    "cpu",
+    "gpu",
+    "ram",
+    "packages"
+  ]
+}
 )";
 
 string Config::getConfigPath() const {
   const char *home = getenv("HOME");
-  if (!home)
-    return "";
-  return string(home) + "/.config/hyprfetch/config.yaml";
+  return home ? string(home) + "/.config/hyprfetch/config.json" : "";
 }
 
 bool Config::exists() const { return fs::exists(getConfigPath()); }
 
 bool Config::load() {
   string path = getConfigPath();
-  fs::path cfgPath(path);
+  fs::create_directories(fs::path(path).parent_path());
 
-  // Create default config if missing
-  if (!fs::exists(cfgPath)) {
-    try {
-      fs::create_directories(cfgPath.parent_path());
-
-      ofstream out(path);
-      out << DEFAULT_CONFIG;
-      out.close();
-
-      cout << "Created default config at " << path << endl;
-    } catch (const fs::filesystem_error &e) {
-      cerr << "Config creation failed: " << e.what() << endl;
-      return false;
-    }
+  if (!fs::exists(path)) {
+    ofstream out(path);
+    out << DEFAULT_CONFIG;
+    out.close();
+    cout << "Created default config at " << path << endl;
   }
 
-  // Load config
   try {
-    root = YAML::LoadFile(path);
-  } catch (const YAML::Exception &e) {
-    cerr << "YAML parse error: " << e.what() << endl;
+    ifstream in(path);
+    in >> root;
+  } catch (const std::exception &e) {
+    cerr << "Config parse error: " << e.what() << endl;
     return false;
   }
 
   return true;
 }
 
-bool Config::getBool(const string &key, bool fallback) const {
-  if (!root[key])
-    return fallback;
-  return root[key].as<bool>();
+const json *Config::resolvePath(const string &path) const {
+  const json *current = &root;
+  size_t start = 0;
+
+  while (true) {
+    size_t dot = path.find('.', start);
+    string key = path.substr(start, dot - start);
+
+    if (!current->contains(key))
+      return nullptr;
+
+    current = &(*current)[key];
+
+    if (dot == string::npos)
+      break;
+    start = dot + 1;
+  }
+  return current;
 }
 
-string Config::getString(const string &key, const string &fallback) const {
-  if (!root[key])
-    return fallback;
-  return root[key].as<string>();
+string Config::getString(const string &path, const string &fallback) const {
+  const json *node = resolvePath(path);
+  return (node && node->is_string()) ? node->get<string>() : fallback;
 }
 
-int Config::getInt(const string &key, int fallback) const {
-  if (!root[key])
-    return fallback;
-  return root[key].as<int>();
+int Config::getInt(const string &path, int fallback) const {
+  const json *node = resolvePath(path);
+  return (node && node->is_number_integer()) ? node->get<int>() : fallback;
+}
+
+vector<string> Config::getModules() const {
+  vector<string> mods;
+  if (!root.contains("modules") || !root["modules"].is_array())
+    return mods;
+
+  for (const auto &m : root["modules"])
+    mods.push_back(m.get<string>());
+
+  return mods;
 }
 
 Config config;

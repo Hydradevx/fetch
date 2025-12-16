@@ -47,7 +47,7 @@ string getDistroIdLike() {
 }
 
 vector<string> getDistroLogo() {
-  string id = config.getString("logo", "auto");
+  string id = config.getString("general.logo", "auto");
 
   if (id == "auto") {
     id = getDistroId();

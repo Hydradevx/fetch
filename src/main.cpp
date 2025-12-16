@@ -58,44 +58,21 @@ void displayAll() {
 vector<string> outLines;
 
 void DisplayRegister() {
-  if (config.getBool("show_os", false)) {
-    string osName = getOsName();
-    outLines.push_back("OS: " + osName);
-  }
+  for (const auto &mod : config.getModules()) {
 
-  if (config.getBool("show_gpu", false)) {
-    vector<string> gpuModels = getGpuModels();
-    for (const auto &gpuModel : gpuModels) {
-      outLines.push_back("GPU Model: " + gpuModel);
+    if (mod == "os") {
+      outLines.push_back("OS: " + getOsName());
+    } else if (mod == "cpu") {
+      outLines.push_back("CPU: " + getCpuModel());
+    } else if (mod == "gpu") {
+      for (const auto &gpu : getGpuModels())
+        outLines.push_back("GPU: " + gpu);
+    } else if (mod == "ram") {
+      outLines.push_back("RAM: " + getUsedRam() + " / " + getTotalRam());
+    } else if (mod == "packages") {
+      outLines.push_back("Packages: " + getPackageCount());
+      outLines.push_back("Flatpaks: " + getFlatpakCount());
     }
-  }
-
-  if (config.getBool("show_cpu", false)) {
-    string cpuModel = getCpuModel();
-    outLines.push_back("CPU Model: " + cpuModel);
-  }
-
-  if (config.getBool("show_ram", false)) {
-    string totalRam = getTotalRam();
-    outLines.push_back("Total RAM: " + totalRam);
-  }
-
-  if (config.getBool("show_used_ram", false)) {
-    string usedRam = getUsedRam();
-    outLines.push_back("Used RAM: " + usedRam);
-  }
-
-  if (config.getBool("show_available_ram", false)) {
-    string availableRam = getAvailableRam();
-    outLines.push_back("Available RAM: " + availableRam);
-  }
-
-  if (config.getBool("show_packages", false)) {
-    string packageCount = getPackageCount();
-    outLines.push_back("Installed Packages: " + packageCount);
-
-    string flatpakCount = getFlatpakCount();
-    outLines.push_back("Installed Flatpaks: " + flatpakCount);
   }
 }
 
@@ -108,8 +85,8 @@ void Display() {
     }
   }
 
-  int pad_left = config.getInt("padding_left", 0);
-  int pad_right = config.getInt("padding_right", 0);
+  int pad_left = config.getInt("general.padding_left", 0);
+  int pad_right = config.getInt("general.padding_right", 0);
   size_t totalLines = max(logoLines.size(), outLines.size());
   for (size_t i = 0; i < totalLines; ++i) {
     string logoPart;

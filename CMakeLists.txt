@@ -12,10 +12,10 @@ file(GLOB_RECURSE SRC_FILES
     src/*.cpp
 )
 
-find_package(yaml-cpp REQUIRED)
-
 add_executable(hyprfetch ${SRC_FILES})
 
 target_include_directories(hyprfetch PRIVATE include)
 
-target_link_libraries(hyprfetch PRIVATE yaml-cpp::yaml-cpp)
+find_package(nlohmann_json REQUIRED)
+
+target_link_libraries(hyprfetch nlohmann_json::nlohmann_json )
