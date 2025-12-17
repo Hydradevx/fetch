@@ -48,9 +48,6 @@ void displayAll() {
   string wm = GetWM();
   cout << "Window Manager: " << wm << endl;
 
-  string flatpakCount = getFlatpakCount();
-  cout << "Installed Flatpaks: " << flatpakCount << endl;
-
   string kernelArch = getKernelArchiture();
   cout << "Kernel Architecture: " << kernelArch << endl;
 }
@@ -62,16 +59,67 @@ void DisplayRegister() {
 
     if (mod == "os") {
       outLines.push_back("OS: " + getOsName());
-    } else if (mod == "cpu") {
+
+    } else if (mod == "host") {
+      outLines.push_back("Host: " + getHost());
+
+    } else if (mod == "kernel") {
+      outLines.push_back("Kernel: " + getKernelVersion());
+
+    } else if (mod == "uptime") {
+      outLines.push_back("Uptime: " + getUptime());
+
+    } else if (mod == "cpu_model") {
       outLines.push_back("CPU: " + getCpuModel());
+
+    } else if (mod == "cpu_cores") {
+      outLines.push_back("CPU Cores: " + getCpuCoreCount());
+
     } else if (mod == "gpu") {
       for (const auto &gpu : getGpuModels())
         outLines.push_back("GPU: " + gpu);
-    } else if (mod == "ram") {
-      outLines.push_back("RAM: " + getUsedRam() + " / " + getTotalRam());
+
+    } else if (mod == "ram_total") {
+      outLines.push_back("Total RAM: " + getTotalRam());
+
+    } else if (mod == "ram_used") {
+      outLines.push_back("Used RAM: " + getUsedRam());
+
+    } else if (mod == "ram_available") {
+      outLines.push_back("Available RAM: " + getAvailableRam());
+
+    } else if (mod == "swap_total") {
+      outLines.push_back("Total Swap: " + getTotalSwap());
+
+    } else if (mod == "swap_free") {
+      outLines.push_back("Swap Free: " + getSwapFree());
+
+    } else if (mod == "disk_total") {
+      outLines.push_back("Disk Size: " + getDiskSize());
+
+    } else if (mod == "disk_used") {
+      outLines.push_back("Disk Used: " + getDiskUsed());
+
+    } else if (mod == "resolution") {
+      outLines.push_back("Resolution: " + getResolution());
+
+    } else if (mod == "shell") {
+      outLines.push_back("Shell: " + getShell());
+
+    } else if (mod == "terminal") {
+      outLines.push_back("Terminal: " + getTerminal());
+
+    } else if (mod == "wm") {
+      outLines.push_back("WM: " + GetWM());
+
     } else if (mod == "packages") {
       outLines.push_back("Packages: " + getPackageCount());
+
+    } else if (mod == "flatpaks") {
       outLines.push_back("Flatpaks: " + getFlatpakCount());
+
+    } else if (mod == "arch") {
+      outLines.push_back("Arch: " + getKernelArchiture());
     }
   }
 }
