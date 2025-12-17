@@ -35,3 +35,11 @@ std::string stripAnsi(const std::string &s) {
 }
 
 size_t visibleLength(const std::string &s) { return stripAnsi(s).length(); }
+
+string ansiFgHex(const string &hex) {
+  int r = stoi(hex.substr(1, 2), nullptr, 16);
+  int g = stoi(hex.substr(3, 2), nullptr, 16);
+  int b = stoi(hex.substr(5, 2), nullptr, 16);
+  return "\033[38;2;" + to_string(r) + ";" + to_string(g) + ";" + to_string(b) +
+         "m";
+}

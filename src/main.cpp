@@ -10,6 +10,25 @@
 
 using namespace std;
 
+vector<string> applyLogoColors(const vector<string> &logo,
+                               const vector<string> &colors) {
+  vector<string> result;
+
+  for (string line : logo) {
+    for (size_t i = 0; i < colors.size(); ++i) {
+      string token = "$" + to_string(i + 1);
+      size_t pos;
+      while ((pos = line.find(token)) != string::npos) {
+        line.replace(pos, token.length(), ansiFgHex(colors[i]));
+      }
+    }
+    line += "\033[0m"; // reset per-line
+    result.push_back(line);
+  }
+
+  return result;
+}
+
 void displayAll() {
 
   string hostName = getHost();
@@ -125,7 +144,13 @@ void DisplayRegister() {
 }
 
 void Display() {
-  vector<string> logoLines = getDistroLogo();
+  vector<string> logoRaw = getDistroLogo();
+  vector<string> logoColors = {
+      config.getString("theme.color_primary", "#1793D1"),
+      config.getString("theme.color_secondary", "#0F3057"),
+      config.getString("theme.color_tertiary", "#00AEEF"),
+  };
+  vector<string> logoLines = applyLogoColors(logoRaw, logoColors);
   size_t maxLogoWidth = 0;
   for (const auto &line : logoLines) {
     if (visibleLength(line) > maxLogoWidth) {
