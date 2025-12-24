@@ -1,49 +1,35 @@
 mod core;
 mod util;
-use core::hardware;
+use core::{hardware, system};
 use util::config::Config;
-
-// use core::{environment, hardware, system};
 
 pub fn display_register(config: &Config) -> Vec<String> {
     let mut out_lines: Vec<String> = Vec::new();
 
     for module in config.get_modules() {
         match module.as_str() {
-            // "os" => {
-            //     out_lines.push(format!("OS: {}", system::get_os_name()));
-            // }
+            "os" => {
+                out_lines.push(format!("OS: {}", system::get_os_name()));
+            }
 
-            // "host" => {
-            //     out_lines.push(format!("Host: {}", environment::get_host()));
-            // }
+            "host" => {
+                out_lines.push(format!("Host: {}", system::get_host()));
+            }
 
-            // "kernel" => {
-            //     out_lines.push(format!(
-            //         "Kernel: {}",
-            //         system::get_kernel_version()
-            //     ));
-            // }
+            "kernel" => {
+                out_lines.push(format!("Kernel: {}", system::get_kernel_version()));
+            }
 
-            // "uptime" => {
-            //     out_lines.push(format!(
-            //         "Uptime: {}",
-            //         system::get_uptime()
-            //     ));
-            // }
+            "uptime" => {
+                out_lines.push(format!("Uptime: {}", system::get_uptime()));
+            }
 
             "cpu_model" => {
-                out_lines.push(format!(
-                    "CPU: {}",
-                    hardware::get_cpu_model()
-                ));
+                out_lines.push(format!("CPU: {}", hardware::get_cpu_model()));
             }
 
             "cpu_cores" => {
-                out_lines.push(format!(
-                    "CPU Cores: {}",
-                    hardware::get_cpu_core_count()
-                ));
+                out_lines.push(format!("CPU Cores: {}", hardware::get_cpu_core_count()));
             }
 
             "gpu" => {
@@ -53,59 +39,35 @@ pub fn display_register(config: &Config) -> Vec<String> {
             }
 
             "ram_total" => {
-                out_lines.push(format!(
-                    "Total RAM: {}",
-                    hardware::get_total_ram()
-                ));
+                out_lines.push(format!("Total RAM: {}", hardware::get_total_ram()));
             }
 
             "ram_used" => {
-                out_lines.push(format!(
-                    "Used RAM: {}",
-                    hardware::get_used_ram()
-                ));
+                out_lines.push(format!("Used RAM: {}", hardware::get_used_ram()));
             }
 
             "ram_available" => {
-                out_lines.push(format!(
-                    "Available RAM: {}",
-                    hardware::get_available_ram()
-                ));
+                out_lines.push(format!("Available RAM: {}", hardware::get_available_ram()));
             }
 
             "swap_total" => {
-                out_lines.push(format!(
-                    "Total Swap: {}",
-                    hardware::get_total_swap()
-                ));
+                out_lines.push(format!("Total Swap: {}", hardware::get_total_swap()));
             }
 
             "swap_free" => {
-                out_lines.push(format!(
-                    "Swap Free: {}",
-                    hardware::get_swap_free()
-                ));
+                out_lines.push(format!("Swap Free: {}", hardware::get_swap_free()));
             }
 
             "disk_total" => {
-                out_lines.push(format!(
-                    "Disk Size: {}",
-                    hardware::get_disk_size()
-                ));
+                out_lines.push(format!("Disk Size: {}", hardware::get_disk_size()));
             }
 
             "disk_used" => {
-                out_lines.push(format!(
-                    "Disk Used: {}",
-                    hardware::get_disk_used()
-                ));
+                out_lines.push(format!("Disk Used: {}", hardware::get_disk_used()));
             }
 
             "resolution" => {
-                out_lines.push(format!(
-                    "Resolution: {}",
-                    hardware::get_resolution()
-                ));
+                out_lines.push(format!("Resolution: {}", hardware::get_resolution()));
             }
 
             // "shell" => {
@@ -142,14 +104,9 @@ pub fn display_register(config: &Config) -> Vec<String> {
             //         system::get_flatpak_count()
             //     ));
             // }
-
-            // "arch" => {
-            //     out_lines.push(format!(
-            //         "Arch: {}",
-            //         system::get_kernel_architecture()
-            //     ));
-            // }
-
+            "arch" => {
+                out_lines.push(format!("Arch: {}", system::get_kernel_architecture()));
+            }
             _ => {}
         }
     }
