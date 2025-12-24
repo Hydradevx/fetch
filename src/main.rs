@@ -1,6 +1,6 @@
 mod core;
 mod util;
-use core::{hardware, system};
+use core::{enviroment, hardware, system};
 use util::config::Config;
 
 pub fn display_register(config: &Config) -> Vec<String> {
@@ -70,40 +70,25 @@ pub fn display_register(config: &Config) -> Vec<String> {
                 out_lines.push(format!("Resolution: {}", hardware::get_resolution()));
             }
 
-            // "shell" => {
-            //     out_lines.push(format!(
-            //         "Shell: {}",
-            //         environment::get_shell()
-            //     ));
-            // }
+            "shell" => {
+                out_lines.push(format!("Shell: {}", enviroment::get_shell()));
+            }
 
-            // "terminal" => {
-            //     out_lines.push(format!(
-            //         "Terminal: {}",
-            //         environment::get_terminal()
-            //     ));
-            // }
+            "terminal" => {
+                out_lines.push(format!("Terminal: {}", enviroment::get_terminal()));
+            }
 
-            // "wm" => {
-            //     out_lines.push(format!(
-            //         "WM: {}",
-            //         system::get_wm()
-            //     ));
-            // }
+            "wm" => {
+                out_lines.push(format!("WM: {}", enviroment::get_wm()));
+            }
 
-            // "packages" => {
-            //     out_lines.push(format!(
-            //         "Packages: {}",
-            //         system::get_package_count()
-            //     ));
-            // }
+            "packages" => {
+                out_lines.push(format!("Packages: {}", enviroment::get_package_count()));
+            }
 
-            // "flatpaks" => {
-            //     out_lines.push(format!(
-            //         "Flatpaks: {}",
-            //         system::get_flatpak_count()
-            //     ));
-            // }
+            "flatpaks" => {
+                out_lines.push(format!("Flatpaks: {}", enviroment::get_flatpak_count()));
+            }
             "arch" => {
                 out_lines.push(format!("Arch: {}", system::get_kernel_architecture()));
             }
